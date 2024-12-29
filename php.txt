@@ -1,0 +1,23 @@
+<?php
+
+header("Access-Control-Allow-Origin: *");
+
+$db = new PDO('mysql :host=localhost;dbname=frontendaily', 'root', 'root');
+
+$query = isset($_GET['query']) ? $_GET['query'] : false;
+
+if($query) {
+    $rows = $db->query('select * from posts where post_title like "%' . $query . '%"')->fetchAll(PDO::FETCH_OBJ);
+
+    if($rows) {
+        $rows = array_map(function($row){
+            return [
+            'id' => $row->post_id,
+            'title' => $row->post_title,
+            'date' => $row->post_date,
+            'image' => 'https://frontendaily.com/demos/' .$row->post_no . '/' . $row->post_no . '.png' 
+            ];
+        }, $rows);
+        echo json_encode($rows);
+    }
+}
